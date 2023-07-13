@@ -49,21 +49,45 @@ public class MyUserManager {
         return false;
     }
 
-
-    public void displayAllUsers() {
+    public boolean changePassword(String username, String oldPassword, String newPassword) {
         try (Connection connection = DriverManager.getConnection(DB_URL);
-             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Users")) {
-            ResultSet resultSet = statement.executeQuery();
-    
-            while (resultSet.next()) {
-                String username = resultSet.getString("username");
-                String password = resultSet.getString("password");
-    
-                System.out.println("Username: " + username + ", Password: " + password);
+             PreparedStatement statement = connection.prepareStatement("UPDATE Users SET password = ? WHERE username = ? AND password = ?")) {
+            statement.setString(1, newPassword);
+            statement.setString(2, username);
+            statement.setString(3, oldPassword);
+            int rowsAffected = statement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("密码修改成功");
+                return true;
+            } else {
+                System.out.println("用户名或原密码不正确");
             }
         } catch (SQLException e) {
-            System.out.println("Failed to retrieve users: " + e.getMessage());
+            System.out.println("密码修改失败: " + e.getMessage());
         }
+
+        return false;
     }
-    
+
+    public boolean resetPassword(String username, String newPassword) {
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+             PreparedStatement statement = connection.prepareStatement("UPDATE Users SET password = ? WHERE username = ?")) {
+            statement.setString(1, newPassword);
+            statement.setString(2, username);
+            int rowsAffected = statement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("密码重置成功");
+                return true;
+            } else {
+                System.out.println("用户名不存在");
+            }
+        } catch (SQLException e) {
+            System.out.println("密码重置失败: " + e.getMessage());
+        }
+
+        return false;
+    }
 }
+

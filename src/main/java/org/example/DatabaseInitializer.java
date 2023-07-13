@@ -44,4 +44,17 @@ public class DatabaseInitializer {
             System.out.println("Failed to initialize database: " + e.getMessage());
         }
     }
+
+    private static final String CART_DB_URL = "jdbc:sqlite:cart.db";
+
+    public void initCartDatabase() {
+        try (Connection connection = DriverManager.getConnection(CART_DB_URL);
+             Statement statement = connection.createStatement()) {
+            String createTableQuery = "CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)";
+            statement.executeUpdate(createTableQuery);
+            System.out.println("Database initialized successfully!");
+        } catch (SQLException e) {
+            System.out.println("Failed to initialize database: " + e.getMessage());
+        }
+    }
 }
