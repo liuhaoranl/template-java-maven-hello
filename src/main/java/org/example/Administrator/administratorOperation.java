@@ -4,20 +4,63 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.sql.Statement;
+import java.util.Optional;
 public class administratorOperation {
     private static final String DB_URL = "jdbc:sqlite:users.db";
+    private static final String ADMIN_DB_URL = "jdbc:sqlite:admin.db";
 
-   
-    public boolean changeAdminPassword(String username, String newPassword) {//修改密码
-        try (Connection connection = DriverManager.getConnection(DB_URL);
+    public boolean initializeAdminAccount() {//管理员账号初始化
+        try (Connection connection = DriverManager.getConnection(ADMIN_DB_URL);
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS Administrators (username TEXT PRIMARY KEY, password TEXT)");
+    
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM Administrators WHERE username = 'admin'");
+            if (!resultSet.next()) {
+                statement.executeUpdate("INSERT INTO Administrators (username, password) VALUES ('admin', '654321')");
+                System.out.println("管理员账号初始化成功");
+                return true;
+            } else {
+                System.out.println("管理员账号已存在");
+            }
+        } catch (SQLException e) {
+            System.out.println("管理员账号初始化失败: " + e.getMessage());
+        }
+    
+        return false;
+    }
+    
+    public boolean loginAdmin(String username, String password) {//管理员登录
+        try (Connection connection = DriverManager.getConnection(ADMIN_DB_URL);
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Administrators WHERE username = ?")) {
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+    
+            if (resultSet.next()) {
+                String storedPassword = resultSet.getString("password");
+                if (password.equals(storedPassword)) {
+                    System.out.println("管理员登录成功");
+                    return true;
+                } else {
+                    System.out.println("管理员密码不正确");
+                }
+            } else {
+                System.out.println("管理员用户名不存在");
+            }
+        } catch (SQLException e) {
+            System.out.println("管理员登录失败: " + e.getMessage());
+        }
+    
+        return false;
+    }
+    
+    public boolean changeAdminPassword(String username, String newPassword) {//管理员密码修改
+        try (Connection connection = DriverManager.getConnection(ADMIN_DB_URL);
              PreparedStatement statement = connection.prepareStatement("UPDATE Administrators SET password = ? WHERE username = ?")) {
             statement.setString(1, newPassword);
             statement.setString(2, username);
             int rowsAffected = statement.executeUpdate();
-
+    
             if (rowsAffected > 0) {
                 System.out.println("管理员密码修改成功");
                 return true;
@@ -27,9 +70,10 @@ public class administratorOperation {
         } catch (SQLException e) {
             System.out.println("管理员密码修改失败: " + e.getMessage());
         }
-
+    
         return false;
     }
+    
 
     public boolean resetUserPassword(String username, String newPassword) {//重置用户密码
         try (Connection connection = DriverManager.getConnection(DB_URL);
@@ -51,22 +95,20 @@ public class administratorOperation {
         return false;
     }
 
-    public List<String> listAllUsers() {//列出用户信息
-        List<String> userList = new ArrayList<>();
-
+    public void displayAllUsers() {
         try (Connection connection = DriverManager.getConnection(DB_URL);
-             PreparedStatement statement = connection.prepareStatement("SELECT username FROM Users")) {
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Users")) {
             ResultSet resultSet = statement.executeQuery();
-
+    
             while (resultSet.next()) {
                 String username = resultSet.getString("username");
-                userList.add(username);
+                String password = resultSet.getString("password");
+    
+                System.out.println("Username: " + username + ", Password: " + password);
             }
         } catch (SQLException e) {
-            System.out.println("列出用户信息失败: " + e.getMessage());
+            System.out.println("Failed to retrieve users: " + e.getMessage());
         }
-
-        return userList;
     }
 
     public boolean deleteUser(String username) {//删除用户信息
@@ -88,28 +130,30 @@ public class administratorOperation {
         return false;
     }
 
-    public String getUserInfo(String username) {//查询用户信息
+    public Optional<String> getUserInfo(String username) {//查询用户信息
         String userInfo = null;
-
+    
         try (Connection connection = DriverManager.getConnection(DB_URL);
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM Users WHERE username = ?")) {
             statement.setString(1, username);
             ResultSet resultSet = statement.executeQuery();
-
+    
             if (resultSet.next()) {
-                String userId = resultSet.getString("id");
                 String userPassword = resultSet.getString("password");
-                userInfo = "用户ID: " + userId + ", 用户名: " + username + ", 密码: " + userPassword;
+                userInfo = "用户名: " + username + ", 密码: " + userPassword;
             } else {
                 System.out.println("用户名不存在");
             }
         } catch (SQLException e) {
             System.out.println("查询用户信息失败: " + e.getMessage());
         }
-
-        return userInfo;
+    
+        return Optional.ofNullable(userInfo);
     }
 }
+
+
+
 
 
 
