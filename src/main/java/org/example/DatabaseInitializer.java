@@ -13,9 +13,9 @@ public class DatabaseInitializer {
              Statement statement = connection.createStatement()) {
             String createTableQuery = "CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)";
             statement.executeUpdate(createTableQuery);
-            System.out.println("User database initialized successfully!");
+            System.out.println("Database initialized successfully!");
         } catch (SQLException e) {
-            System.out.println("Failed to initialize user database: " + e.getMessage());
+            System.out.println("Failed to initialize database: " + e.getMessage());
         }
     }
 
@@ -24,15 +24,13 @@ public class DatabaseInitializer {
     public void initAdminDatabase() {
         try (Connection connection = DriverManager.getConnection(ADMIN_DB_URL);
              Statement statement = connection.createStatement()) {
-            String createTableQuery = "CREATE TABLE IF NOT EXISTS Administrators (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)";
+            String createTableQuery = "CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)";
             statement.executeUpdate(createTableQuery);
-            System.out.println("Admin database initialized successfully!");
+            System.out.println("Database initialized successfully!");
         } catch (SQLException e) {
-            System.out.println("Failed to initialize admin database: " + e.getMessage());
+            System.out.println("Failed to initialize database: " + e.getMessage());
         }
     }
-
-
 
     private static final String GOODS_DB_URL = "jdbc:sqlite:goods.db";
 

@@ -31,7 +31,7 @@ public class Main {
         try (Scanner scanner = new Scanner(System.in)) {
             System.out.println("***欢迎你的到来***");
             while (true) {
-                //clearScreen();
+                clearScreen();
                 System.out.println("***请选择你的身份***");
                 System.out.println("1.管理员  2.用户  3.退出系统");
                 String userInput = scanner.nextLine();
@@ -118,7 +118,7 @@ public class Main {
 
     private static void manageUser(Scanner scanner, administratorOperation administratorOperation) {
         while (true) {
-            //clearScreen();
+            clearScreen();
             System.out.println("***用户管理子菜单***");
             System.out.println("***1.列出用户信息***");
             System.out.println("***2.重置用户密码***");
@@ -126,26 +126,23 @@ public class Main {
             System.out.println("***4.查询用户信息***");
             System.out.println("***q/Q返回上一级菜单***e/E返回主菜单***");
 
-            String userInput1 = scanner.nextLine();
-int userInput;
+            String userInput = scanner.nextLine();
 
-             switch (userInput1) {
-               case "1":
-                   administratorOperation.displayAllUsers();
-                   break;
-               case "2":
-                   resetUserPassword(scanner, administratorOperation);
-                   break;
+            switch (userInput) {
+                case "1":
+                    administratorOperation.displayAllUsers();
+                    break;
+                case "2":
+                    resetUserPassword(scanner, administratorOperation);
+                    break;
                 case "3":
-                   System.out.println("输入用户名");
-                   String userInputStr = scanner.nextLine();
-                   userInput = Integer.parseInt(userInputStr);
-                   administratorOperation.deleteUser(userInput);
-                   break;
+                    System.out.println("输入用户名");
+                    userInput = scanner.nextLine();
+                    administratorOperation.deleteUser(userInput);
+                    break;
                 case "4":
                     System.out.println("输入用户名");
-                    userInputStr = scanner.nextLine();
-                    userInput = Integer.parseInt(userInputStr);
+                    userInput = scanner.nextLine();
                     administratorOperation.getUserInfo(userInput);
                     break;
                 case "q":
