@@ -3,7 +3,7 @@ package org.example.User;
 import java.util.Scanner;
 
 public class userOperation {
-    private String Username; // 声明用户名变量
+    private String username; // Change field name to lowercase "u"
     private Scanner scanner;
     private MyUserManager userManager;
 
@@ -11,9 +11,11 @@ public class userOperation {
         this.scanner = scanner;
         this.userManager = userManager;
     }
+    
     public String getUsername() {
-        return Username;
+        return username;
     }
+    
     public void registerUser() {
         System.out.println("***用户注册***");
         while (true) {
@@ -31,7 +33,7 @@ public class userOperation {
         }
     }
 
-    public void loginUser() {
+    public boolean loginUser() {
         System.out.println("***用户登录***");
         System.out.print("请输入用户名:");
         String username = this.scanner.nextLine();
@@ -42,14 +44,15 @@ public class userOperation {
         boolean success = this.userManager.login(username, password);
 
         if (success) {
-            this.Username = getUsername(); // 保存登录的用户名到实例变量
+            this.username = username; // Save the logged-in username to the instance variable
             System.out.println("登录成功！");
         } else {
             System.out.println("登录失败，请检查用户名和密码。");
         }
+
+        return success; // Return the success flag
     }
 
-   
     public void changePassword() {
         System.out.println("***修改密码***");
         System.out.print("请输入用户名:");
