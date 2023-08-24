@@ -21,8 +21,12 @@ public class userOperation {
             System.out.print("请输入用户名(用户名长度不少于5个字符): ");
             String username = scanner.nextLine();
 
-            System.out.print("请输入密码(密码长度大于8个字符，必须是大小写字母、数字和标点符号的组合): ");
+            if (username.length() < 5) {
+                System.out.println("用户名长度不能少于5个字符");
+                continue;
+            }
 
+            System.out.print("请输入密码(密码长度大于8个字符，必须是大小写字母、数字和标点符号的组合): ");
             String password = scanner.nextLine();
 
             boolean success = userManager.registerUser(username, password);
@@ -33,6 +37,8 @@ public class userOperation {
         }
     }
 
+
+    
     public boolean loginUser() {
         System.out.println("***用户登录***");
         System.out.print("请输入用户名: ");

@@ -18,7 +18,7 @@ public class Main {
         databaseInitializer.initAdminDatabase();
         databaseInitializer.initGoodsDatabase();
         databaseInitializer.initCartDatabase();
-        userManager = new MyUserManager();
+        userManager = new MyUserManager(null);
         mainMenu();
     }
 

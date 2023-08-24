@@ -5,10 +5,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
+import java.util.Scanner;
 
 public class MyUserManager {
     private static final String DB_URL = "jdbc:sqlite:users.db";
-
+    private Scanner scanner;
+    public MyUserManager(Scanner scanner) {
+        this.scanner = scanner;
+    }
     public boolean registerUser(String username, String password) {
         // 检查用户名长度
         if (username.length() < 5) {
@@ -28,6 +32,14 @@ public class MyUserManager {
             return false;
         }
 
+        // 读取用户手机号和邮箱
+        System.out.print("请输入手机号: ");
+       
+        String phoneNumber = scanner.nextLine();
+
+        System.out.print("请输入邮箱: ");
+        String email = scanner.nextLine();
+
         try (Connection connection = DriverManager.getConnection(DB_URL);
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM Users WHERE username = ?")) {
             statement.setString(1, username);
@@ -39,9 +51,11 @@ public class MyUserManager {
             }
 
             // 注册用户
-            try (PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO Users (username, password) VALUES (?, ?)")) {
+            try (PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO Users (username, password, phone_number, email) VALUES (?, ?, ?, ?)")) {
                 insertStatement.setString(1, username);
                 insertStatement.setString(2, password);
+                insertStatement.setString(3, phoneNumber);
+                insertStatement.setString(4, email);
                 insertStatement.executeUpdate();
                 System.out.println("注册成功");
                 return true;

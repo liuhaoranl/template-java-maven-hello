@@ -37,7 +37,15 @@ public class DatabaseInitializer {
     public void initGoodsDatabase() {
         try (Connection connection = DriverManager.getConnection(GOODS_DB_URL);
              Statement statement = connection.createStatement()) {
-            String createTableQuery = "CREATE TABLE IF NOT EXISTS Goods (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, category TEXT, quantity INTEGER, cost REAL, price REAL)";
+            String createTableQuery = "CREATE TABLE IF NOT EXISTS Goods " +
+                "(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "name TEXT, " +
+                "manufacturer TEXT, " +
+                "production_date TEXT, " +
+                "model TEXT, " +
+                "cost REAL, " +
+                "price REAL, " +
+                "quantity INTEGER)";
             statement.executeUpdate(createTableQuery);
             System.out.println("Database initialized successfully!");
         } catch (SQLException e) {
