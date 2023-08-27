@@ -1,5 +1,4 @@
 package org.example;
-
 import java.util.Scanner;
 import org.example.User.userOperation;
 import org.example.User.MyUserManager;
@@ -37,8 +36,8 @@ public class Main {
             System.out.println("1.管理员  2.用户  3.退出系统");
     
             if (scanner.hasNextLine()) {
-                String userInput = scanner.nextLine();
-                switch (userInput) {
+                String userInput1 = scanner.nextLine();
+                switch (userInput1) {
                     case "1":
                         administrator();
                         break;
@@ -71,9 +70,9 @@ public class Main {
                 System.out.println("***4.商品管理***");
                 System.out.println("***q/Q返回上一级菜单***e/E返回主菜单***");
 
-                String userInput = scanner.nextLine();
+                String userInput2 = scanner.nextLine();
 
-                switch (userInput) {
+                switch (userInput2) {
                     case "1": // 登录
                         loginAdmin(scanner, administratorOperation);
                         break;
@@ -129,9 +128,9 @@ public class Main {
             System.out.println("***4.查询用户信息***");
             System.out.println("***q/Q返回上一级菜单***e/E返回主菜单***");
 
-            String userInput = scanner.nextLine();
+            String userInput3 = scanner.nextLine();
 
-            switch (userInput) {
+            switch (userInput3) {
                 case "1":
                     administratorOperation.displayAllUsers();
                     break;
@@ -140,13 +139,13 @@ public class Main {
                     break;
                 case "3":
                     System.out.println("输入用户名");
-                    userInput = scanner.nextLine();
-                    administratorOperation.deleteUser(userInput);
+                    userInput3 = scanner.nextLine();
+                    administratorOperation.deleteUser(userInput3);
                     break;
                 case "4":
                     System.out.println("输入用户名");
-                    userInput = scanner.nextLine();
-                    administratorOperation.getUserInfo(userInput);
+                    userInput3 = scanner.nextLine();
+                    administratorOperation.getUserInfo(userInput3);
                     break;
                 case "q":
                 case "Q":
@@ -182,9 +181,9 @@ public class Main {
             System.out.println("***5.列出所有商品信息***");
             System.out.println("***q/Q返回上一级菜单***e/E返回主菜单***");
 
-            String userInput = scanner.nextLine();
+            String userInput4 = scanner.nextLine();
 
-            switch (userInput) {
+            switch (userInput4) {
                 case "1":
                     goodsOperation.addGoodsInformation();
                     break;
@@ -226,9 +225,9 @@ public class Main {
                 System.out.println("***4.购物***");
                 System.out.println("***5.退出登录***");
                 System.out.println("***q/Q返回上一级菜单***e/E返回主菜单***");
-                String userInput = scanner.nextLine();
+                String userInput5 = scanner.nextLine();
 
-                switch (userInput) {
+                switch (userInput5) {
                     case "1": // 注册
                         userOperation.registerUser();
                         break;
@@ -280,9 +279,9 @@ private static void manageUserPassword(Scanner scanner, MyUserManager userManage
         System.out.println("***q/Q返回上一级菜单***e/E返回主菜单***");
 
         if (scanner.hasNextLine()) {
-            String userInput = scanner.nextLine();
+            String userInput6 = scanner.nextLine();
 
-            switch (userInput) {
+            switch (userInput6) {
                 case "1":
                     userOperation.changePassword();
                     break;
@@ -324,9 +323,9 @@ private static void manageUserPassword(Scanner scanner, MyUserManager userManage
             System.out.print("请选择操作: ");
     
             if (scanner.hasNextLine()) {
-                String userInput = scanner.nextLine(); // 读取用户输入
+                String userInput7 = scanner.nextLine(); // 读取用户输入
     
-                switch (userInput) {
+                switch (userInput7) {
                     case "1":
                         cartOperation.displayGoodsInformation();
                         break;
