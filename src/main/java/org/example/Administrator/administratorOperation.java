@@ -100,8 +100,10 @@ public class administratorOperation {
             while (resultSet.next()) {
                 String username = resultSet.getString("username");
                 String password = resultSet.getString("password");
+                String phone_number = resultSet.getString("phone_number");
+                String email = resultSet.getString("email");
     
-                System.out.println("Username: " + username + ", Password: " + password);
+                System.out.println("Username: " + username + ", Password: " + password+ ", phone_number: " + phone_number+ ", email: " + email);
             }
         } catch (SQLException e) {
             System.out.println("Failed to retrieve users: " + e.getMessage());
@@ -137,7 +139,9 @@ public class administratorOperation {
     
             if (resultSet.next()) {
                 String userPassword = resultSet.getString("password");
-                userInfo = "用户名: " + username + ", 密码: " + userPassword;
+                String userPhone_number = resultSet.getString("phone_number");
+                String userEmail = resultSet.getString("email");
+                userInfo = "用户名: " + username + ", 密码: " + userPassword + ", 电话: " + userPhone_number + ", 邮箱: " + userEmail;
             } else {
                 System.out.println("用户名不存在");
             }

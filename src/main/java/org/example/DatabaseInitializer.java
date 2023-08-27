@@ -69,4 +69,21 @@ public class DatabaseInitializer {
         }
     }
     
+
+    private static final String PURCHASE_HISTORY_DB_URL = "jdbc:sqlite:purchase_history.db";
+
+    public void initPurchaseHistoryDatabase() {
+        try (Connection connection = DriverManager.getConnection(PURCHASE_HISTORY_DB_URL);
+             Statement statement = connection.createStatement()) {
+            String createTableQuery = "CREATE TABLE IF NOT EXISTS PurchaseHistory " +
+                "(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "username TEXT, " +
+                "purchased_items TEXT, " +
+                "quantity INTEGER)";
+            statement.executeUpdate(createTableQuery);
+            System.out.println("PurchaseHistory database initialized successfully!");
+        } catch (SQLException e) {
+            System.out.println("Failed to initialize PurchaseHistory database: " + e.getMessage());
+        }
+    }
 }

@@ -64,7 +64,7 @@ public class cartOperation {
         }
     }
 
-    public void checkout() {
+    public void checkout(String username) {
         System.out.println("***结账***");
         System.out.println("请选择支付方式：");
         System.out.println("1. 支付宝");
@@ -88,11 +88,11 @@ public class cartOperation {
                 System.out.println("无效的支付方式");
                 return;
         }
-        cartManager.checkout();
+        cartManager.checkout(username);
     }
 
-    public void viewPurchaseHistory(String username) {
+    public void viewPurchaseHistory() {
         System.out.println("***查看购物历史***");
-        cartManager.viewPurchaseHistory(username);
+        cartManager.viewPurchaseHistory();
     }
 }

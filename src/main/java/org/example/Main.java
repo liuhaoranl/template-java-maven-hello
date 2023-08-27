@@ -11,13 +11,14 @@ import org.example.ShoppingCart.cartManager;
 public class Main {
     private static MyUserManager userManager;
     private static boolean loggedIn = false;
-   
+
     public static void main(String[] args) {
         DatabaseInitializer databaseInitializer = new DatabaseInitializer();
         databaseInitializer.initUserDatabase();
         databaseInitializer.initAdminDatabase();
         databaseInitializer.initGoodsDatabase();
         databaseInitializer.initCartDatabase();
+        databaseInitializer.initPurchaseHistoryDatabase();
         userManager = new MyUserManager();
         mainMenu();
     }
@@ -28,12 +29,14 @@ public class Main {
     }
 
     private static void mainMenu() {
-        try (Scanner scanner = new Scanner(System.in)) {
-            System.out.println("***欢迎你的到来***");
-            while (true) {
-                clearScreen();
-                System.out.println("***请选择你的身份***");
-                System.out.println("1.管理员  2.用户  3.退出系统");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("***欢迎你的到来***");
+        while (true) {
+            clearScreen();
+            System.out.println("***请选择你的身份***");
+            System.out.println("1.管理员  2.用户  3.退出系统");
+    
+            if (scanner.hasNextLine()) {
                 String userInput = scanner.nextLine();
                 switch (userInput) {
                     case "1":
@@ -43,11 +46,14 @@ public class Main {
                         user();
                         break;
                     case "3":
+                        scanner.close();
                         return;
                     default:
                         System.out.println("无效的选项，请重新输入。");
                         break;
                 }
+            } else {
+                System.out.println("无效的输入。");
             }
         }
     }
@@ -209,69 +215,71 @@ public class Main {
     }
 
     private static void user() {
-        try (Scanner scanner = new Scanner(System.in)) { 
-        userOperation userOperation = new userOperation(scanner, userManager);
-        while (true) {
-            System.out.println("***欢迎进入购物系统***");
-            System.out.println("***请选择***");
-            System.out.println("***1.用户注册***");
-            System.out.println("***2.用户登录***");
-            System.out.println("***3.用户密码管理 ***");
-            System.out.println("***4.购物***");
-            System.out.println("***5.退出登录***");
-            System.out.println("***q/Q返回上一级菜单***e/E返回主菜单***");
-            String userInput = scanner.nextLine();
+        try (Scanner scanner = new Scanner(System.in)) {
+            userOperation userOperation = new userOperation(scanner, userManager);
+            while (true) {
+                System.out.println("***欢迎进入购物系统***");
+                System.out.println("***请选择***");
+                System.out.println("***1.用户注册***");
+                System.out.println("***2.用户登录***");
+                System.out.println("***3.用户密码管理 ***");
+                System.out.println("***4.购物***");
+                System.out.println("***5.退出登录***");
+                System.out.println("***q/Q返回上一级菜单***e/E返回主菜单***");
+                String userInput = scanner.nextLine();
 
-            switch (userInput) {
-                case "1": // 注册
-                    userOperation.registerUser();
-                    break;
-                case "2": // 登录
-                    loggedIn = userOperation.loginUser();
-                    break;
-                case "3": // 密码管理
-                    if (loggedIn) {
-                        manageUserPassword(scanner, userManager, userOperation);
-                    } else {
-                        System.out.println("请先登录用户账号。");
-                    }
-                    break;
-                case "4": // 购物
-                    if (loggedIn) {
-                        shoppingMenu(userManager, userOperation, scanner);
-                    } else {
-                        System.out.println("请先登录用户账号。");
-                    }
-                    break;
-                case "5":
-                    loggedIn = false;
-                    return;
-                case "q":
-                case "Q":
-                    loggedIn = false;
-                    return;
-                case "e":
-                case "E":
-                    loggedIn = false;
-                    mainMenu();
-                    break;
-                default:
-                    System.out.println("无效的选项，请重新输入。");
-                    break;
+                switch (userInput) {
+                    case "1": // 注册
+                        userOperation.registerUser();
+                        break;
+                    case "2": // 登录
+                        loggedIn = userOperation.loginUser();
+                        break;
+                    case "3": // 密码管理
+                        if (loggedIn) {
+                            manageUserPassword(scanner, userManager, userOperation);
+                        } else {
+                            System.out.println("请先登录用户账号。");
+                        }
+                        break;
+                    case "4": // 购物
+                        if (loggedIn) {
+                            shoppingMenu(userManager, userOperation, scanner);
+                        } else {
+                            System.out.println("请先登录用户账号。");
+                        }
+                        break;
+                    case "5":
+                        loggedIn = false;
+                        return;
+                    case "q":
+                    case "Q":
+                        loggedIn = false;
+                        return;
+                    case "e":
+                    case "E":
+                        loggedIn = false;
+                        mainMenu();
+                        break;
+                    default:
+                        System.out.println("无效的选项，请重新输入。");
+                        break;
+                }
             }
         }
-     }
     }
 
-    private static void manageUserPassword(Scanner scanner, MyUserManager userManager, userOperation userOperation) {
-        while (true) {
-            //clearScreen();
-            System.out.println("***用户密码管理子菜单***");
-            System.out.println("***请选择***");
-            System.out.println("***1.修改密码***");
-            System.out.println("***2.重置密码***");
-            System.out.println("***q/Q返回上一级菜单***e/E返回主菜单***");
+    
+private static void manageUserPassword(Scanner scanner, MyUserManager userManager, userOperation userOperation) {
+    while (true) {
+        //clearScreen();
+        System.out.println("***用户密码管理子菜单***");
+        System.out.println("***请选择***");
+        System.out.println("***1.修改密码***");
+        System.out.println("***2.重置密码***");
+        System.out.println("***q/Q返回上一级菜单***e/E返回主菜单***");
 
+        if (scanner.hasNextLine()) {
             String userInput = scanner.nextLine();
 
             switch (userInput) {
@@ -292,14 +300,17 @@ public class Main {
                     System.out.println("无效的选项，请重新输入。");
                     break;
             }
+        } else {
+            System.out.println("无效的输入。");
         }
     }
+}
 
     private static void shoppingMenu(MyUserManager userManager, userOperation userOperation, Scanner scanner) {
         cartManager cartManager = new cartManager();
         cartOperation cartOperation = new cartOperation(scanner, cartManager);
         String username = userOperation.getUsername(); // 保存登录的用户名
-
+    
         while (true) {
             System.out.println("***欢迎进入购物系统***");
             System.out.println("1.查看商品");
@@ -311,38 +322,45 @@ public class Main {
             System.out.println("q/Q返回上一级菜单");
             System.out.println("e/E返回主菜单");
             System.out.print("请选择操作: ");
-            String userInput = scanner.nextLine();
-
-            switch (userInput) {
-                case "1":
-                    cartOperation.displayGoodsInformation();
-                    break;
-                case "2":
-                    cartOperation.addToCart();
-                    break;
-                case "3":
-                    cartOperation.removeFromCart();
-                    break;
-                case "4":
-                    cartOperation.updateQuantity();
-                    break;
-                case "5":
-                    cartOperation.checkout();
-                    break;
-                case "6":
-                    cartOperation.viewPurchaseHistory(username); // 将用户名传递给viewPurchaseHistory方法
-                    break;
-                case "q":
-                case "Q":
-                    return;
-                case "e":
-                case "E":
-                    mainMenu();
-                    break;
-                default:
-                    System.out.println("无效的选项，请重新输入。");
-                    break;
+    
+            if (scanner.hasNextLine()) {
+                String userInput = scanner.nextLine(); // 读取用户输入
+    
+                switch (userInput) {
+                    case "1":
+                        cartOperation.displayGoodsInformation();
+                        break;
+                    case "2":
+                        cartOperation.addToCart();
+                        break;
+                    case "3":
+                        cartOperation.removeFromCart();
+                        break;
+                    case "4":
+                        cartOperation.updateQuantity();
+                        break;
+                    case "5":
+                        cartOperation.checkout(username);
+                        break;
+                    case "6":
+                        cartOperation.viewPurchaseHistory();
+                        break;
+                    case "q":
+                    case "Q":
+                        return;
+                    case "e":
+                    case "E":
+                        mainMenu();
+                        break;
+                    default:
+                        System.out.println("无效的选项，请重新输入。");
+                        break;
+                }
+            } else {
+                System.out.println("无效的输入。");
+                scanner.nextLine(); // 清空无效的输入行
             }
         }
     }
+    
 }

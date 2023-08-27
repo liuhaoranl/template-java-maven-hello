@@ -5,13 +5,14 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class cartManager {
     private static final String CART_DB_URL = "jdbc:sqlite:cart.db";
     private static final String GOODS_DB_URL = "jdbc:sqlite:goods.db";
+    private static final String PURCHASE_HISTORY_DB_URL = "jdbc:sqlite:purchase_history.db";
     private Scanner scanner;
 
-   
     
     public void displayGoodsInformation() {
         try (Connection connection = DriverManager.getConnection(GOODS_DB_URL);
@@ -79,7 +80,7 @@ public class cartManager {
     }
     
 
-    public boolean updateQuantity(String product, int newQuantity) {
+    public boolean updateQuantity(String product, int newQuantity) {//修改购物车中的商品数量
         try (Connection connection = DriverManager.getConnection(CART_DB_URL);
              PreparedStatement statement = connection.prepareStatement("UPDATE Cart SET quantity = ? WHERE product = ?")) {
             statement.setInt(1, newQuantity);
@@ -93,125 +94,104 @@ public class cartManager {
                 System.out.println("购物车中不存在该商品");
             }
         } catch (SQLException e) {
-            System.out.println("更新购物车商品数量失败: " + e.getMessage());
+            System.out.println("修改购物车商品数量失败: " + e.getMessage());
         }
 
         return false;
     }
 
-    
-    private double getProductPrice(String product) {//获取单价
-        double price = 0.0;
-    
-        try (Connection connection = DriverManager.getConnection(GOODS_DB_URL);
-             PreparedStatement statement = connection.prepareStatement("SELECT price FROM Goods WHERE name = ?")) {
-            statement.setString(1, product);
-            ResultSet resultSet = statement.executeQuery();
-    
-            if (resultSet.next()) {
-                price = resultSet.getDouble("price");
-            } else {
-                System.out.println("找不到商品：" + product);
-            }
-    
-        } catch (SQLException e) {
-            System.out.println("获取商品价格失败: " + e.getMessage());
-        }
-    
-        return price;
-    }
-
-
-   
-
-    public void updateGoodsQuantities() {
-        try (Connection connection = DriverManager.getConnection(GOODS_DB_URL)) {
-            // 获取购物车中的商品信息
-            try (PreparedStatement cartStatement = connection.prepareStatement("SELECT product, quantity FROM Cart");
-                 ResultSet cartResultSet = cartStatement.executeQuery()) {
-
-                while (cartResultSet.next()) {
-                    String product = cartResultSet.getString("product");
-                    int cartQuantity = cartResultSet.getInt("quantity");
-
-                    // 查询商品表中的数量
-                    try (PreparedStatement goodsStatement = connection.prepareStatement("SELECT quantity FROM Goods WHERE name = ?")) {
-                        goodsStatement.setString(1, product);
-                        ResultSet goodsResultSet = goodsStatement.executeQuery();
-
-                        if (goodsResultSet.next()) {
-                            int currentQuantity = goodsResultSet.getInt("quantity");
-                            int newQuantity = currentQuantity - cartQuantity;
-
-                            // 更新商品数量
-                            try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE Goods SET quantity = ? WHERE name = ?")) {
-                                updateStatement.setInt(1, newQuantity);
-                                updateStatement.setString(2, product);
-                                updateStatement.executeUpdate();
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("更新商品数量失败: " + e.getMessage());
-        }
-    }
-
-
-    private double calculateTotalCost() {//计算总价
-        double totalCost = 0.0;
-    
+    public String getPurchasedItemsFromCart() {
+        StringBuilder items = new StringBuilder();
         try (Connection connection = DriverManager.getConnection(CART_DB_URL);
              PreparedStatement statement = connection.prepareStatement("SELECT product, quantity FROM Cart");
              ResultSet resultSet = statement.executeQuery()) {
-    
             while (resultSet.next()) {
                 String product = resultSet.getString("product");
                 int quantity = resultSet.getInt("quantity");
+                items.append(product).append(" (数量: ").append(quantity).append(")").append(", ");
+            }
+        } catch (SQLException e) {
+            System.out.println("获取购买商品清单失败: " + e.getMessage());
+        }
+        return items.toString();
+    }
+
+
+    private void savePurchaseHistory(String username, Statement cartStatement) {
+        try (Connection connection = DriverManager.getConnection(PURCHASE_HISTORY_DB_URL);
+             PreparedStatement statement = connection.prepareStatement(
+                "INSERT INTO PurchaseHistory (username, purchased_items, quantity) VALUES (?, ?, ?)")) {
+            ResultSet cartResultSet = cartStatement.executeQuery("SELECT * FROM Cart");
+            while (cartResultSet.next()) {
+                String product = cartResultSet.getString("product");
+                int quantity = cartResultSet.getInt("quantity");
     
-                double price = getProductPrice(product); 
-                totalCost += price * quantity;
+                statement.setString(1, username);
+                statement.setString(2, product);
+                statement.setInt(3, quantity);
+                statement.executeUpdate();
             }
     
+            System.out.println("购买历史已保存！");
         } catch (SQLException e) {
-            System.out.println("计算总消费金额失败: " + e.getMessage());
+            System.out.println("保存购买历史失败: " + e.getMessage());
         }
+    }
+
+
+    public void checkout(String username) {
     
-        return totalCost;
+        // 创建连接和购物车Statement
+        try (Connection cartConnection = DriverManager.getConnection(CART_DB_URL);
+             Statement cartStatement = cartConnection.createStatement()) {
+    
+            // 更新Goods数据库中商品数量
+            try (Connection connection = DriverManager.getConnection(GOODS_DB_URL);
+                 Statement goodsStatement = connection.createStatement()) {
+    
+                ResultSet cartResultSet = cartStatement.executeQuery("SELECT * FROM Cart");
+                while (cartResultSet.next()) {
+                    String product = cartResultSet.getString("product");
+                    int quantity = cartResultSet.getInt("quantity");
+    
+                    // 更新商品数量
+                    String updateGoodsQuery = "UPDATE Goods SET quantity = quantity - " + quantity + " WHERE name = '" + product + "'";
+                    goodsStatement.executeUpdate(updateGoodsQuery);
+                }
+    
+                // 清空购物车
+                cartStatement.executeUpdate("DELETE FROM Cart");
+    
+                System.out.println("付款成功！感谢您的购买！");
+    
+                // 在这里保存购物历史
+                savePurchaseHistory(username,cartStatement);
+            } catch (SQLException e) {
+                System.out.println("结账过程中出现错误: " + e.getMessage());
+            }
+        } catch (SQLException e) {
+            System.out.println("创建购物车连接失败: " + e.getMessage());
+        }
     }
-
-
-    public void checkout() {//结账
-        double totalCost = calculateTotalCost(); 
-        System.out.println("总消费金额：" + totalCost);
-        updateGoodsQuantities();
-        System.out.println("结账成功！");
-    }
-
-
-    public void viewPurchaseHistory(String username) {
-        try (Connection connection = DriverManager.getConnection(CART_DB_URL);
-             PreparedStatement statement = connection.prepareStatement("SELECT C.*, G.price FROM Cart C JOIN Goods G ON C.product = G.name WHERE username = ?")) {
-            statement.setString(1, username);
+    
+    
+    public void viewPurchaseHistory() {
+        try (Connection connection = DriverManager.getConnection(PURCHASE_HISTORY_DB_URL);
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM PurchaseHistory")) {
             ResultSet resultSet = statement.executeQuery();
     
-            System.out.println("购物历史：");
-            double totalCost = 0.0;
-    
             while (resultSet.next()) {
-                String product = resultSet.getString("product");
-                int quantity = resultSet.getInt("quantity");
-                double price = resultSet.getDouble("price");
-                double cost = price * quantity;
-                totalCost += cost;
+              
+                String username = resultSet.getString("username");
+                String purchased_items = resultSet.getString("purchased_items");
+                String quantity = resultSet.getString("quantity");
+
     
-                System.out.println("商品：" + product + "，数量：" + quantity + "，单价：" + price + "，花费：" + cost);
+                System.out.println("用户名： " + username + ", 商品： " + purchased_items+ ", 数量： " + quantity);
             }
-    
-            System.out.println("总花费：" + totalCost);
         } catch (SQLException e) {
-            System.out.println("查看购物历史失败: " + e.getMessage());
+            System.out.println("Failed to retrieve users: " + e.getMessage());
         }
     }
+   
 } 
