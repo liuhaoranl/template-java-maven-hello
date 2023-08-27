@@ -122,27 +122,7 @@ public class cartManager {
     }
 
 
-    private double calculateTotalCost() {//计算总价
-        double totalCost = 0.0;
-    
-        try (Connection connection = DriverManager.getConnection(CART_DB_URL);
-             PreparedStatement statement = connection.prepareStatement("SELECT product, quantity FROM Cart");
-             ResultSet resultSet = statement.executeQuery()) {
-    
-            while (resultSet.next()) {
-                String product = resultSet.getString("product");
-                int quantity = resultSet.getInt("quantity");
-    
-                double price = getProductPrice(product); // Implement this method to fetch product price from Goods table
-                totalCost += price * quantity;
-            }
-    
-        } catch (SQLException e) {
-            System.out.println("计算总消费金额失败: " + e.getMessage());
-        }
-    
-        return totalCost;
-    }
+   
 
     public void updateGoodsQuantities() {
         try (Connection connection = DriverManager.getConnection(GOODS_DB_URL)) {
@@ -178,31 +158,32 @@ public class cartManager {
         }
     }
 
-    public void checkout() {//结账
-        System.out.println("请选择支付方式：");
-        System.out.println("1. 支付宝");
-        System.out.println("2. 微信");
-        System.out.println("3. 银行卡");
-        System.out.print("请输入支付方式编号: ");
-        
-        int paymentMethod = Integer.parseInt(scanner.nextLine());
 
-        switch (paymentMethod) {
-            case 1:
-                System.out.println("支付宝支付成功！");
-                break;
-            case 2:
-                System.out.println("微信支付成功！");
-                break;
-            case 3:
-                System.out.println("银行卡支付成功！");
-                break;
-            default:
-                System.out.println("无效的支付方式");
-                return;
+    private double calculateTotalCost() {//计算总价
+        double totalCost = 0.0;
+    
+        try (Connection connection = DriverManager.getConnection(CART_DB_URL);
+             PreparedStatement statement = connection.prepareStatement("SELECT product, quantity FROM Cart");
+             ResultSet resultSet = statement.executeQuery()) {
+    
+            while (resultSet.next()) {
+                String product = resultSet.getString("product");
+                int quantity = resultSet.getInt("quantity");
+    
+                double price = getProductPrice(product); 
+                totalCost += price * quantity;
+            }
+    
+        } catch (SQLException e) {
+            System.out.println("计算总消费金额失败: " + e.getMessage());
         }
+    
+        return totalCost;
+    }
 
-        double totalCost = calculateTotalCost(); // Implement this method to calculate total cost
+
+    public void checkout() {//结账
+        double totalCost = calculateTotalCost(); 
         System.out.println("总消费金额：" + totalCost);
         updateGoodsQuantities();
         System.out.println("结账成功！");

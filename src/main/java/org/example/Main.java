@@ -115,7 +115,7 @@ public class Main {
 
     private static void manageUser(Scanner scanner, administratorOperation administratorOperation) {
         while (true) {
-            clearScreen();
+            //clearScreen();
             System.out.println("***用户管理子菜单***");
             System.out.println("***1.列出用户信息***");
             System.out.println("***2.重置用户密码***");

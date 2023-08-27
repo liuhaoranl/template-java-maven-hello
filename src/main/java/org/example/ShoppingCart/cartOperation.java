@@ -66,6 +66,28 @@ public class cartOperation {
 
     public void checkout() {
         System.out.println("***结账***");
+        System.out.println("请选择支付方式：");
+        System.out.println("1. 支付宝");
+        System.out.println("2. 微信");
+        System.out.println("3. 银行卡");
+        System.out.print("请输入支付方式编号: ");
+        
+        int paymentMethod = Integer.parseInt(scanner.nextLine());
+
+        switch (paymentMethod) {
+            case 1:
+                System.out.println("支付宝支付成功！");
+                break;
+            case 2:
+                System.out.println("微信支付成功！");
+                break;
+            case 3:
+                System.out.println("银行卡支付成功！");
+                break;
+            default:
+                System.out.println("无效的支付方式");
+                return;
+        }
         cartManager.checkout();
     }
 
