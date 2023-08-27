@@ -1,5 +1,6 @@
 package org.example.User;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class userOperation {
     private String username;
@@ -15,27 +16,46 @@ public class userOperation {
         return username;
     }
 
-    public void registerUser() {
-        System.out.println("***用户注册***");
-        while (true) {
-            System.out.print("请输入用户名(用户名长度不少于5个字符): ");
-            String username = scanner.nextLine();
+public void registerUser() {
+    System.out.println("***用户注册***");
+    while (true) {
+        System.out.print("请输入用户名(用户名长度不少于5个字符): ");
+        String username = scanner.nextLine();
 
-            if (username.length() < 5) {
-                System.out.println("用户名长度不能少于5个字符");
-                continue;
-            }
+        if (username.length() < 5) {
+            System.out.println("用户名长度不能少于5个字符");
+            continue;
+        }
 
-            System.out.print("请输入密码(密码长度大于8个字符，必须是大小写字母、数字和标点符号的组合): ");
-            String password = scanner.nextLine();
+        System.out.print("请输入密码(密码长度大于8个字符，必须是大小写字母、数字和标点符号的组合): ");
+        String password = scanner.nextLine();
 
-            boolean success = userManager.registerUser(username, password);
+        // 检查密码长度
+        if (password.length() <= 8) {
+            System.out.println("密码长度必须大于8个字符");
+            continue;
+        }
 
-            if (success) {
-                break;
-            }
+        // 检查密码格式是否满足要求
+        if (!Pattern.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*\\p{Punct})[A-Za-z\\d\\p{Punct}]+$", password)) {
+            System.out.println("密码必须包含大小写字母、数字和标点符号");
+            continue;
+        }
+
+        // 读取用户手机号和邮箱
+        System.out.print("请输入手机号: ");
+        String phoneNumber = scanner.nextLine();
+
+        System.out.print("请输入邮箱: ");
+        String email = scanner.nextLine();
+
+        boolean success = userManager.registerUser(username, password, phoneNumber, email);
+
+        if (success) {
+            break;
         }
     }
+}
 
 
     

@@ -5,19 +5,21 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+
 public class DatabaseInitializer {
     private static final String DB_URL = "jdbc:sqlite:users.db";
 
     public void initUserDatabase() {
         try (Connection connection = DriverManager.getConnection(DB_URL);
              Statement statement = connection.createStatement()) {
-            String createTableQuery = "CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)";
+            String createTableQuery = "CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, phone_number TEXT, email TEXT)";
             statement.executeUpdate(createTableQuery);
             System.out.println("Database initialized successfully!");
         } catch (SQLException e) {
             System.out.println("Failed to initialize database: " + e.getMessage());
         }
     }
+    
 
     private static final String ADMIN_DB_URL = "jdbc:sqlite:admin.db";
 

@@ -18,11 +18,8 @@ public class administratorOperation {
             ResultSet resultSet = statement.executeQuery("SELECT * FROM Administrators WHERE username = 'admin'");
             if (!resultSet.next()) {
                 statement.executeUpdate("INSERT INTO Administrators (username, password) VALUES ('admin', 'ynuinfo#777')");
-                System.out.println("管理员账号初始化成功");
                 return true;
-            } else {
-                System.out.println("管理员账号已存在");
-            }
+            } 
         } catch (SQLException e) {
             System.out.println("管理员账号初始化失败: " + e.getMessage());
         }

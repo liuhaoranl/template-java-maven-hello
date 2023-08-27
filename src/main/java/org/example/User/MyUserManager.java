@@ -4,42 +4,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.regex.Pattern;
-import java.util.Scanner;
 
 public class MyUserManager {
     private static final String DB_URL = "jdbc:sqlite:users.db";
-    private Scanner scanner;
-    public MyUserManager(Scanner scanner) {
-        this.scanner = scanner;
-    }
-    public boolean registerUser(String username, String password) {
-        // 检查用户名长度
-        if (username.length() < 5) {
-            System.out.println("用户名长度不能少于5个字符");
-            return false;
-        }
 
-        // 检查密码长度
-        if (password.length() <= 8) {
-            System.out.println("密码长度必须大于8个字符");
-            return false;
-        }
-
-        // 检查密码格式是否满足要求
-        if (!Pattern.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$", password)) {
-            System.out.println("密码必须包含大小写字母、数字和特殊字符");
-            return false;
-        }
-
-        // 读取用户手机号和邮箱
-        System.out.print("请输入手机号: ");
-       
-        String phoneNumber = scanner.nextLine();
-
-        System.out.print("请输入邮箱: ");
-        String email = scanner.nextLine();
-
+    
+    public boolean registerUser(String username, String password,String phoneNumber,String email) {
         try (Connection connection = DriverManager.getConnection(DB_URL);
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM Users WHERE username = ?")) {
             statement.setString(1, username);
@@ -65,7 +35,6 @@ public class MyUserManager {
         } catch (SQLException e) {
             System.out.println("注册用户失败: " + e.getMessage());
         }
-
         return false;
     }
 

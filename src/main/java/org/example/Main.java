@@ -11,14 +11,14 @@ import org.example.ShoppingCart.cartManager;
 public class Main {
     private static MyUserManager userManager;
     private static boolean loggedIn = false;
-
+   
     public static void main(String[] args) {
         DatabaseInitializer databaseInitializer = new DatabaseInitializer();
         databaseInitializer.initUserDatabase();
         databaseInitializer.initAdminDatabase();
         databaseInitializer.initGoodsDatabase();
         databaseInitializer.initCartDatabase();
-        userManager = new MyUserManager(null);
+        userManager = new MyUserManager();
         mainMenu();
     }
 
@@ -40,7 +40,7 @@ public class Main {
                         administrator();
                         break;
                     case "2":
-                        user(scanner);
+                        user();
                         break;
                     case "3":
                         return;
@@ -54,33 +54,30 @@ public class Main {
 
     private static void administrator() {
         administratorOperation administratorOperation = new administratorOperation();
+        administratorOperation.initializeAdminAccount();
         try (Scanner scanner = new Scanner(System.in)) {
             while (true) {
                 //clearScreen();
                 System.out.println("***欢迎进入管理员系统***");
-                System.out.println("***1.管理员注册***");
-                System.out.println("***2.管理员登录***");
-                System.out.println("***3.管理员密码修改***");
-                System.out.println("***4.客户管理***");
-                System.out.println("***5.商品管理***");
+                System.out.println("***1.管理员登录***");
+                System.out.println("***2.管理员密码修改***");
+                System.out.println("***3.客户管理***");
+                System.out.println("***4.商品管理***");
                 System.out.println("***q/Q返回上一级菜单***e/E返回主菜单***");
 
                 String userInput = scanner.nextLine();
 
                 switch (userInput) {
-                    case "1": // 注册
-                        administratorOperation.initializeAdminAccount();
-                        break;
-                    case "2": // 登录
+                    case "1": // 登录
                         loginAdmin(scanner, administratorOperation);
                         break;
-                    case "3": // 密码管理
+                    case "2": // 密码管理
                         managePassword(scanner, administratorOperation);
                         break;
-                    case "4": // 客户管理
+                    case "3": // 客户管理
                         manageUser(scanner, administratorOperation);
                         break;
-                    case "5": // 商品管理
+                    case "4": // 商品管理
                         manageGoods(scanner);
                         break;
                     case "q":
@@ -211,9 +208,9 @@ public class Main {
         }
     }
 
-    private static void user(Scanner scanner) {
+    private static void user() {
+        try (Scanner scanner = new Scanner(System.in)) { 
         userOperation userOperation = new userOperation(scanner, userManager);
-
         while (true) {
             System.out.println("***欢迎进入购物系统***");
             System.out.println("***请选择***");
@@ -263,6 +260,7 @@ public class Main {
                     break;
             }
         }
+     }
     }
 
     private static void manageUserPassword(Scanner scanner, MyUserManager userManager, userOperation userOperation) {

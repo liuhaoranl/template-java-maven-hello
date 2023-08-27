@@ -15,17 +15,17 @@ public class cartManager {
     
     public void displayGoodsInformation() {
         try (Connection connection = DriverManager.getConnection(GOODS_DB_URL);
-             PreparedStatement statement = connection.prepareStatement("SELECT name, category, quantity, price FROM Goods");
+             PreparedStatement statement = connection.prepareStatement("SELECT name, model, quantity, price FROM Goods");
              ResultSet resultSet = statement.executeQuery()) {
             System.out.println("商品信息：");
             while (resultSet.next()) {
                 String name = resultSet.getString("name");
-                String category = resultSet.getString("category");
+                String model = resultSet.getString("model");
                 int quantity = resultSet.getInt("quantity");
                 double price = resultSet.getDouble("price");
                 
                 System.out.println("商品名称：" + name);
-                System.out.println("商品类别：" + category);
+                System.out.println("商品类别：" + model);
                 System.out.println("商品数量：" + quantity);
                 System.out.println("商品售价：" + price);
                 System.out.println("-------------------------");
@@ -99,7 +99,8 @@ public class cartManager {
         return false;
     }
 
-    private double getProductPrice(String product) {
+    
+    private double getProductPrice(String product) {//获取单价
         double price = 0.0;
     
         try (Connection connection = DriverManager.getConnection(GOODS_DB_URL);
@@ -121,7 +122,7 @@ public class cartManager {
     }
 
 
-    private double calculateTotalCost() {
+    private double calculateTotalCost() {//计算总价
         double totalCost = 0.0;
     
         try (Connection connection = DriverManager.getConnection(CART_DB_URL);
@@ -142,8 +143,42 @@ public class cartManager {
     
         return totalCost;
     }
-    
-    public void checkout() {
+
+    public void updateGoodsQuantities() {
+        try (Connection connection = DriverManager.getConnection(GOODS_DB_URL)) {
+            // 获取购物车中的商品信息
+            try (PreparedStatement cartStatement = connection.prepareStatement("SELECT product, quantity FROM Cart");
+                 ResultSet cartResultSet = cartStatement.executeQuery()) {
+
+                while (cartResultSet.next()) {
+                    String product = cartResultSet.getString("product");
+                    int cartQuantity = cartResultSet.getInt("quantity");
+
+                    // 查询商品表中的数量
+                    try (PreparedStatement goodsStatement = connection.prepareStatement("SELECT quantity FROM Goods WHERE name = ?")) {
+                        goodsStatement.setString(1, product);
+                        ResultSet goodsResultSet = goodsStatement.executeQuery();
+
+                        if (goodsResultSet.next()) {
+                            int currentQuantity = goodsResultSet.getInt("quantity");
+                            int newQuantity = currentQuantity - cartQuantity;
+
+                            // 更新商品数量
+                            try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE Goods SET quantity = ? WHERE name = ?")) {
+                                updateStatement.setInt(1, newQuantity);
+                                updateStatement.setString(2, product);
+                                updateStatement.executeUpdate();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("更新商品数量失败: " + e.getMessage());
+        }
+    }
+
+    public void checkout() {//结账
         System.out.println("请选择支付方式：");
         System.out.println("1. 支付宝");
         System.out.println("2. 微信");
@@ -169,6 +204,7 @@ public class cartManager {
 
         double totalCost = calculateTotalCost(); // Implement this method to calculate total cost
         System.out.println("总消费金额：" + totalCost);
+        updateGoodsQuantities();
         System.out.println("结账成功！");
     }
 
@@ -197,5 +233,4 @@ public class cartManager {
             System.out.println("查看购物历史失败: " + e.getMessage());
         }
     }
-}  
-
+} 
