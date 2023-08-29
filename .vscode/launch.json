@@ -1,14 +1,13 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "type": "java",
-        "name": "Debug (Launch)",
-        "request": "launch",
-        "mainClass": "org.example.Main",
-        "projectRoot": "${workspaceFolder}",
-        "preLaunchTask": "build"
-      }
-    ]
-  }
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Debug (Launch)",
+      "request": "launch",
+      "mainClass": "org.example.Main",
+    }
+  ]
+}
+
   
