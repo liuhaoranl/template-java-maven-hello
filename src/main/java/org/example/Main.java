@@ -68,7 +68,7 @@ public class Main {
                 System.out.println("***2.管理员密码修改***");
                 System.out.println("***3.客户管理***");
                 System.out.println("***4.商品管理***");
-                System.out.println("***q/Q返回上一级菜单***e/E返回主菜单***");
+                System.out.println("***e/E返回主菜单***");
 
                 String userInput2 = scanner.nextLine();
 
@@ -85,12 +85,10 @@ public class Main {
                     case "4": // 商品管理
                         manageGoods(scanner);
                         break;
-                    case "q":
-                    case "Q":
-                        return;
                     case "e":
                     case "E":
                         mainMenu();
+                        scanner.nextLine(); // 清除输入行
                         break;
                     default:
                         System.out.println("无效的选项，请重新输入。");
@@ -174,7 +172,7 @@ public class Main {
             System.out.println("***商品管理子菜单***");
             System.out.println("***请选择***");
             goodsOperation goodsOperation = new goodsOperation(scanner);
-            System.out.println("***1.添加商品信息***");
+              System.out.println("***1.添加商品信息***");
             System.out.println("***2.修改商品信息***");
             System.out.println("***3.删除商品信息***");
             System.out.println("***4.查询商品信息***");
@@ -201,9 +199,11 @@ public class Main {
                     break;
                 case "q":
                 case "Q":
+                scanner.nextLine(); // 清除输入行
                     return;
                 case "e":
                 case "E":
+                scanner.nextLine(); // 清除输入行
                     mainMenu();
                     break;
                 default:
@@ -224,7 +224,7 @@ public class Main {
                 System.out.println("***3.用户密码管理 ***");
                 System.out.println("***4.购物***");
                 System.out.println("***5.退出登录***");
-                System.out.println("***q/Q返回上一级菜单***e/E返回主菜单***");
+                System.out.println("***e/E返回主菜单***");
                 String userInput5 = scanner.nextLine();
 
                 switch (userInput5) {
@@ -251,13 +251,10 @@ public class Main {
                     case "5":
                         loggedIn = false;
                         return;
-                    case "q":
-                    case "Q":
-                        loggedIn = false;
-                        return;
                     case "e":
                     case "E":
                         loggedIn = false;
+                        scanner.nextLine(); // 清除输入行
                         mainMenu();
                         break;
                     default:
@@ -290,10 +287,12 @@ private static void manageUserPassword(Scanner scanner, MyUserManager userManage
                     break;
                 case "q":
                 case "Q":
+                scanner.nextLine(); // 清除输入行
                     return;
                 case "e":
                 case "E":
                     mainMenu();
+                    scanner.nextLine(); // 清除输入行
                     break;
                 default:
                     System.out.println("无效的选项，请重新输入。");
@@ -346,10 +345,12 @@ private static void manageUserPassword(Scanner scanner, MyUserManager userManage
                         break;
                     case "q":
                     case "Q":
+                        scanner.nextLine(); // 清除输入行
                         return;
                     case "e":
                     case "E":
                         mainMenu();
+                        scanner.nextLine(); // 清除输入行
                         break;
                     default:
                         System.out.println("无效的选项，请重新输入。");
