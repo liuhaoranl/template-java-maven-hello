@@ -5,7 +5,6 @@
         "label": "build",
         "type": "shell",
         "command": "mvn exec:java",
-        "command": "mvn compile",
         "group": {
           "kind": "build",
           "isDefault": true
